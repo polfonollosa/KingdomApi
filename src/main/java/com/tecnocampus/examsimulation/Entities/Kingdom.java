@@ -1,6 +1,7 @@
 package com.tecnocampus.examsimulation.Entities;
 
 import com.tecnocampus.examsimulation.Utilities.BadRequestException;
+import com.tecnocampus.examsimulation.Utilities.NotAcceptableException;
 
 import java.time.LocalDate;
 import java.util.Date;
@@ -20,7 +21,7 @@ public class Kingdom {
         id = UUID.randomUUID().toString();
         dateOfCreation = LocalDate.now().toString();
         if (gold < 0 || citizens < 0 || food < 0){
-            //Throw new Exception
+            throw new NotAcceptableException("must be positive params");
         }
         this.gold = gold;
         this.citizens = citizens;
@@ -29,7 +30,7 @@ public class Kingdom {
 
     public void investFood(){
         if(gold < 5){
-            throw new BadRequestException("You don't have enough gold");
+            throw new BadRequestException("You don't have enough gold >5");
         }
         gold -= 5;
         food += 10;
@@ -37,13 +38,24 @@ public class Kingdom {
 
     public void investCivilian(){
         if(gold < 5){
-            throw new BadRequestException("You don't have enough gold");
+            throw new BadRequestException("You don't have enough gold >5");
         }
         gold -= 5;
         citizens += 5;
     }
 
-    public void produce(){ } // Fa coses s'ha de mirar el que es com que fa avança en el temps mirar com progressa
+    public void produce(){
+        if(citizens < 5 && food < 5){
+            throw new NotAcceptableException("You don't have enough food >5");
+        }
+        if(citizens > food){
+            citizens /= 2;
+            food = 0;
+            return;
+        }
+        gold *= 2;
+        food /= 2;
+    }
 
     public void attackKingdom(Kingdom kingdom){
         if(kingdom.citizens >= this.citizens){
@@ -89,21 +101,21 @@ public class Kingdom {
 
     public void setGold(int gold) {
         if(gold < 0){
-            //Throw Excpeection
+            throw new BadRequestException("invalid gold must be positive");
         }
         this.gold = gold;
     }
 
     public void setCitizens(int citizens) {
         if(citizens < 0){
-            //Exc
+            throw new BadRequestException("invalid citizens must be positive");
         }
         this.citizens = citizens;
     }
 
     public void setFood(int food) {
         if(food < 0){
-            //Exc
+            throw new BadRequestException("invalid food must be positive");
         }
         this.food = food;
     }
