@@ -2,8 +2,6 @@ package com.tecnocampus.examsimulation.DTO;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.Min;
-import lombok.Getter;
-import lombok.Setter;
 
 public class KingdomDTO{
 
