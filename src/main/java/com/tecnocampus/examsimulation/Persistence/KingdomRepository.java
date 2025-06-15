@@ -59,7 +59,7 @@ public class KingdomRepository {
     }
 
     public boolean existsKingdom(String id) {
-        return jdbcClient.sql("SELECT * FROM KINGDOMS WHERE ID = ?").params(id).query(Long.class).single() > 0;
+        return jdbcClient.sql("SELECT COUNT(*) FROM KINGDOMS WHERE ID = ?").params(id).query(Long.class).single() > 0;
     }
 
     public Optional<Kingdom> findTheRichest() {

@@ -52,6 +52,7 @@ public class Kingdom {
         if(citizens > food){
             citizens /= 2;
             food = 0;
+            gold *= 2;
             return;
         }
         gold *= 2;

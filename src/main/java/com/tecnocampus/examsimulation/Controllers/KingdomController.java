@@ -4,6 +4,7 @@ import com.tecnocampus.examsimulation.DTO.CreateKingdomRequest;
 import com.tecnocampus.examsimulation.DTO.KingdomDTO;
 import com.tecnocampus.examsimulation.Entities.Kingdom;
 import com.tecnocampus.examsimulation.Services.KingdomService;
+import com.tecnocampus.examsimulation.Utilities.NotAcceptableException;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -35,6 +36,36 @@ public class KingdomController {
     public ResponseEntity<KingdomDTO> produceKingdom(@PathVariable String id) {
         Kingdom k = kingdomService.getKingdom(id);
         kingdomService.produce(k);
+        return new ResponseEntity<>(k.toDTO(), HttpStatus.OK);
+    }
+
+    @PostMapping("/{id}/invest")
+    public ResponseEntity<KingdomDTO> invest(
+            @PathVariable String id,
+            @RequestParam String type
+    ) {
+        Kingdom k = kingdomService.getKingdom(id);
+
+        switch (type.toLowerCase()) {
+            case "food" -> kingdomService.investFood(k);
+            case "citizens" -> kingdomService.investCivilian(k);
+            default -> throw new NotAcceptableException("Invalid investment type: " + type);
+        }
+
+        return ResponseEntity.ok(k.toDTO());
+    }
+
+    @GetMapping ("/richest")
+    public ResponseEntity<KingdomDTO> getRichestKingdom() {
+        Kingdom k = kingdomService.findTheRichestKingdom();
+        return new ResponseEntity<>(k.toDTO(), HttpStatus.OK);
+    }
+
+    @PostMapping("/{attackerId}/attack/{targetId}")
+    public ResponseEntity<KingdomDTO> attackKingdom(@PathVariable String attackerId, @PathVariable String targetId) {
+        Kingdom k = kingdomService.getKingdom(attackerId);
+        Kingdom d = kingdomService.getKingdom(targetId);
+        kingdomService.attackKingdom(k, d);
         return new ResponseEntity<>(k.toDTO(), HttpStatus.OK);
     }
 
