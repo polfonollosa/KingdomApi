@@ -18,7 +18,7 @@ public class KingdomRepository {
         this.jdbcClient = jdbcClient;
     }
 
-    public void save(Kingdom king) {
+    public Kingdom save(Kingdom king) {
         jdbcClient.sql("""
             INSERT INTO KINGDOMS (id, dateOfCreation, gold, citizens, food)
             VALUES (?, ?, ?, ?, ?)
@@ -29,6 +29,8 @@ public class KingdomRepository {
                 king.getCitizens(),
                 king.getFood()
         ).update();
+
+        return king;
     }
 
     public List<Kingdom> findAll() {

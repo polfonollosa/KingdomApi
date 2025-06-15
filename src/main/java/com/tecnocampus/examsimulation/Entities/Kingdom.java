@@ -1,5 +1,6 @@
 package com.tecnocampus.examsimulation.Entities;
 
+import com.tecnocampus.examsimulation.DTO.KingdomDTO;
 import com.tecnocampus.examsimulation.Utilities.BadRequestException;
 import com.tecnocampus.examsimulation.Utilities.NotAcceptableException;
 
@@ -30,7 +31,7 @@ public class Kingdom {
 
     public void investFood(){
         if(gold < 5){
-            throw new BadRequestException("You don't have enough gold >5");
+            throw new NotAcceptableException("You don't have enough gold >5");
         }
         gold -= 5;
         food += 10;
@@ -38,7 +39,7 @@ public class Kingdom {
 
     public void investCivilian(){
         if(gold < 5){
-            throw new BadRequestException("You don't have enough gold >5");
+            throw new NotAcceptableException("You don't have enough gold >5");
         }
         gold -= 5;
         citizens += 5;
@@ -118,6 +119,13 @@ public class Kingdom {
             throw new BadRequestException("invalid food must be positive");
         }
         this.food = food;
+    }
+
+    public KingdomDTO toDTO(){
+
+        KingdomDTO dto = new KingdomDTO(this.id, this.dateOfCreation, this.gold, this.citizens, this.food);
+
+        return dto;
     }
 
 }

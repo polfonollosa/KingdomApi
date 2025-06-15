@@ -3,14 +3,17 @@ package com.tecnocampus.examsimulation.Services;
 import com.tecnocampus.examsimulation.Entities.Kingdom;
 import com.tecnocampus.examsimulation.Persistence.KingdomRepository;
 import com.tecnocampus.examsimulation.Utilities.BadRequestException;
+import com.tecnocampus.examsimulation.Utilities.NotAcceptableException;
 import com.tecnocampus.examsimulation.Utilities.NotFoundException;
+import org.springframework.data.relational.core.sql.Not;
+import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 
+@Service
 public class KingdomService {
 
-    private KingdomRepository repo;
+    private final KingdomRepository repo;
 
     public KingdomService(KingdomRepository repo) {
         this.repo = repo;
@@ -26,22 +29,23 @@ public class KingdomService {
                 .orElseThrow(() -> new NotFoundException("there are no kingdoms in the database"));
     }
 
-    public void createKingdom(int gold, int citizens, int food) {
+    public Kingdom createKingdom(int gold, int citizens, int food) throws NotAcceptableException {
         Kingdom kingdom = new Kingdom(gold, citizens, food);
         repo.save(kingdom);
+        return kingdom;
     }
 
     public void deleteKingdom(String kingdomId) {
         repo.deleteKingdom(kingdomId);
     }
 
-    public void investFood(Kingdom kingdom) throws BadRequestException {
+    public void investFood(Kingdom kingdom) throws NotAcceptableException {
         existsKingdom(kingdom);
         kingdom.investFood();
         updateKingdomState(kingdom);
     }
 
-    public void investCivilian(Kingdom kingdom) throws BadRequestException {
+    public void investCivilian(Kingdom kingdom) throws NotAcceptableException {
         existsKingdom(kingdom);
         kingdom.investCivilian();
         updateKingdomState(kingdom);
@@ -63,17 +67,16 @@ public class KingdomService {
 
     }
 
-    public boolean produce(Kingdom kingdom) throws BadRequestException {
+    public void produce(Kingdom kingdom){
         existsKingdom(kingdom);
         try {
             kingdom.produce();
         }
-        catch (BadRequestException e){
+        catch (NotAcceptableException e){
             deleteKingdom(kingdom.getId());
-            return false;
+            throw new NotAcceptableException("not acceptable, borrado");
         }
         updateKingdomState(kingdom);
-        return true;
     }
 
     public List<Kingdom> getAllKingdoms() {
